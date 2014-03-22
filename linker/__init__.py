@@ -1,2 +1,2 @@
 #!/usr/bin/env python
-from linker import *
+from linker import Linker

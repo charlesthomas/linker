@@ -3,13 +3,14 @@ from errno import EEXIST, ENOENT
 from os import listdir, makedirs, path, remove, rename, symlink
 from socket import gethostname
 
-# TODO write README
-# TODO are the links not full paths?
+class LinkerError(Exception): pass
 
 class Linker(object):
-    def __init__(self, target=None, exclude_common=False, delete_existing=False,
-                 dry_run=False, verbose=False, interactive=False):
-        self.target = target or path.dirname(__file__)
+    def __init__(self, target, destination, exclude_common=False,
+                 delete_existing=False, dry_run=False, verbose=False,
+                 interactive=False):
+        self.target = target
+        self.destination = destination
         self.exclude_common = exclude_common
         self.delete_existing = delete_existing
         self.dry_run = dry_run
@@ -19,28 +20,27 @@ class Linker(object):
         # TODO implement interactive mode to approve individual links
         if self.interactive: raise NotImplementedError
 
-        if self.dry_run:
-            self.verbose = True
-            print """
-THIS IS A DRY RUN
-NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
-"""
-
-    def fetch_file_list(self, dirname):
+    def fetch_targets(self, dirname):
         try:
-            return [f for f in listdir(dirname) if not f.startswith('.') and \
-                    not f.endswith('.dontlink')]
+            return [path.join(dirname, f) for f in listdir(dirname) if not \
+                    f.endswith('.dontlink') and not path.isdir(f)]
         except OSError as e:
             if e.errno == ENOENT:
                 return []
             else:
                 raise
 
-    def find_files(self, target):
-        files = self.fetch_file_list(path.join(target, gethostname()))
+    def find_targets(self, target_dir):
+        targets = self.fetch_targets(path.join(target_dir, gethostname()))
         if not self.exclude_common:
-            files += self.fetch_file_list(path.join(target, 'common'))
-        return files
+            targets += self.fetch_targets(path.join(target_dir, 'common'))
+        return targets
+
+    def generate_link(self, target):
+        target = path.basename(target)
+        if not target.startswith('_'):
+            target = path.join(self.destination, target)
+        return target.replace('_', '/').replace('//', '_')
 
     def mkdir_p(self, path):
         try:
@@ -51,13 +51,13 @@ NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
             else:
                 raise
 
-    def make_links(self, files=None):
-        if files is None:
-            files = self.find_files(self.target)
+    def make_links(self, targets=None):
+        if targets is None:
+            targets = self.find_targets(self.target)
 
         errors = []
-        for target in files:
-            link = target.replace('_', '/')
+        for target in targets:
+            link = self.generate_link(target)
             if self.verbose:
                 print "linking %s to %s" % (target, link)
 
@@ -67,9 +67,10 @@ NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
                     print "directory %s doesn't exist... creating it" % \
                     directory
                 if not self.dry_run:
-                    mkdir_p(directory)
+                    self.mkdir_p(directory)
 
             try:
+                # TODO only ignore identical links?
                 if path.exists(link) and not path.islink(link):
                     if self.verbose:
                         print "%s already exists... " % link,
@@ -89,13 +90,13 @@ NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
                 errors.append("linking %s failed" % link)
 
         if errors:
-            print "failed to make some links\n%s\nmaybe you need `sudo !!`" % \
-            "\n".join(errors)
+            raise LinkerError(("failed to make some links\n%s\nmaybe you need "
+                               "`sudo !!`" % "\n".join(errors)))
 
 if __name__ == '__main__':
     from optparse import OptionParser
 
-    parser = OptionParser(usage="usage: %prog [options]")
+    parser = OptionParser(usage="usage: %prog [options] target destination")
     parser.add_option('--interactive', '-i', help="Prompt for all changes",
                       dest='interactive', action='store_true')
     parser.add_option('--verbose', '-v', help="Print all changes",
@@ -103,8 +104,6 @@ if __name__ == '__main__':
     parser.add_option('--dry-run', '-d',
                       help="Print all changes, but DON'T DO THEM",
                       dest='dry_run', action='store_true')
-    parser.add_option('--target-dir', '-t',
-                       help="target directory (where to start)", dest='target')
     parser.add_option('--exclude-common', '-x', dest='exclude_common',
                       action='store_true',
                       help=("default is to link files in `hostname` and "
@@ -115,7 +114,15 @@ if __name__ == '__main__':
                             "original_name.back"))
     (opts, args) = parser.parse_args()
 
-    linker = Linker(target=opts.target, exclude_common=opts.exclude_common,
+    if opts.dry_run:
+        opts.verbose = True
+        print """
+THIS IS A DRY RUN
+NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
+"""
+
+    linker = Linker(target=args[0], destination=args[1],
+                    exclude_common=opts.exclude_common,
                     delete_existing=opts.delete_existing, dry_run=opts.dry_run,
                     verbose=opts.verbose, interactive=opts.interactive)
     linker.make_links()

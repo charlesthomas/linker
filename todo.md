@@ -1,13 +1,17 @@
 ## To Do
 ### ``linker/linker.py``
-(line 6) write README
+(line 20) implement interactive mode to approve individual links
 
-(line 7) are the links not full paths?
+(line 73) only ignore identical links?
 
-(line 19) implement interactive mode to approve individual links
+
+### ``setup.py``
+(line 10) figure out how to install to bin (like pip or nosetests)
+
+(line 24) add classifiers
 
 
 ### ``tests/test_linker.py``
-(line 20) finish tests
+(line 9) finish tests
 
 ######Generated using [todo.md](https://github.com/charlesthomas/todo.md)

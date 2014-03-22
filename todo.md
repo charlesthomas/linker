@@ -1,9 +1,13 @@
 ## To Do
-### ``linker.py``
+### ``linker/linker.py``
 (line 6) write README
 
-(line 26) create missing dirs
+(line 7) are the links not full paths?
 
-(line 72) implement interactive mode to approve individual links
+(line 19) implement interactive mode to approve individual links
+
+
+### ``tests/test_linker.py``
+(line 20) finish tests
 
 ######Generated using [todo.md](https://github.com/charlesthomas/todo.md)

@@ -1,6 +1,8 @@
 ======
 linker
 ======
+.. image:: https://travis-ci.org/charlesthomas/linker.svg?branch=master
+        :target: https://travis-ci.org/charlesthomas/linker
 
 Link config files by file name
 

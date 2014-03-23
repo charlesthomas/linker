@@ -92,37 +92,3 @@ class Linker(object):
         if errors:
             raise LinkerError(("failed to make some links\n%s\nmaybe you need "
                                "`sudo !!`" % "\n".join(errors)))
-
-if __name__ == '__main__':
-    from optparse import OptionParser
-
-    parser = OptionParser(usage="usage: %prog [options] target destination")
-    parser.add_option('--interactive', '-i', help="Prompt for all changes",
-                      dest='interactive', action='store_true')
-    parser.add_option('--verbose', '-v', help="Print all changes",
-                      dest='verbose', action='store_true')
-    parser.add_option('--dry-run', '-d',
-                      help="Print all changes, but DON'T DO THEM",
-                      dest='dry_run', action='store_true')
-    parser.add_option('--exclude-common', '-x', dest='exclude_common',
-                      action='store_true',
-                      help=("default is to link files in `hostname` and "
-                            "'common' dirs. this will only link `hostname`"))
-    parser.add_option('--delete-existing', dest='delete_existing',
-                      action='store_true',
-                      help=("delete existing files instead of moving them to "
-                            "original_name.back"))
-    (opts, args) = parser.parse_args()
-
-    if opts.dry_run:
-        opts.verbose = True
-        print """
-THIS IS A DRY RUN
-NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
-"""
-
-    linker = Linker(target=args[0], destination=args[1],
-                    exclude_common=opts.exclude_common,
-                    delete_existing=opts.delete_existing, dry_run=opts.dry_run,
-                    verbose=opts.verbose, interactive=opts.interactive)
-    linker.make_links()

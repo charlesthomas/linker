@@ -72,7 +72,7 @@ they want to use ``linker`` on a machine called "hostname".
     - /home/user/git/dotfiles
         - hostname
             - .vimrc
-            - .vim_colors_colorscheme.vim
+            - .vim_colors_color__scheme.vim
             - crontab_backup.dontlink
             - _etc_hosts
         - common
@@ -82,7 +82,7 @@ they want to use ``linker`` on a machine called "hostname".
 
     - /home/user/.bashrc -> /home/user/git/dotfiles/common/.bashrc
     - /home/user/.vimrc -> /home/user/git/dotfiles/hostname/.vimrc
-    - /home/user/vim/colors/colorscheme.vim -> /home/user/git/dotfiles/hostname/.vim_colors_colorscheme.vim
+    - /home/user/vim/colors/color_scheme.vim -> /home/user/git/dotfiles/hostname/.vim_colors_color__scheme.vim
     - /etc/hosts -> /home/user/git/dotfiles/hostname/_etc_hosts
 
 Notice crontab_backup.dontlink wasn't linked anywhere.
@@ -91,5 +91,5 @@ To Do
 -----
 See `todo.md`_
 
-.. _Example: #Example
+.. _Example: https://github.com/charlesthomas/linker#example
 .. _todo.md: https://github.com/charlesthomas/linker/blob/master/todo.md

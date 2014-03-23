@@ -10,8 +10,4 @@
 
 (line 24) add classifiers
 
-
-### ``tests/test_linker.py``
-(line 9) finish tests
-
 ######Generated using [todo.md](https://github.com/charlesthomas/todo.md)

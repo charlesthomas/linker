@@ -6,8 +6,6 @@ from unittest import main, TestCase
 
 from linker import Linker
 
-# TODO finish tests
-
 class BaseCase(TestCase):
     @classmethod
     def setUpClass(cls):

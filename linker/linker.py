@@ -31,6 +31,7 @@ class Linker(object):
                 raise
 
     def find_targets(self, target_dir):
+        # TODO make common go first so that you can do host-specific files to overwrite the common ones?
         targets = self.fetch_targets(path.join(target_dir, gethostname()))
         if not self.exclude_common:
             targets += self.fetch_targets(path.join(target_dir, 'common'))

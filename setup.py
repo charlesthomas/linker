@@ -18,7 +18,7 @@ setup(
     description=DESCRIPTION,
     long_description=LONG_DESC,
     test_suite='tests',
-    scripts=['bin/linker'],
+    scripts=['linker/linker.py'],
     classifiers=[]
     # TODO add classifiers
 )

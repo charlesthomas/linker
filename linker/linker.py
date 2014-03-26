@@ -7,8 +7,8 @@ class LinkerError(Exception): pass
 
 class Linker(object):
     def __init__(self, target, destination, exclude_common=False,
-                 delete_existing=False, dry_run=False, verbose=False,
-                 interactive=False):
+                 delete_existing=False, dry_run=False,
+                 verbose=False, interactive=False):
         self.target = target
         self.destination = destination
         self.exclude_common = exclude_common
@@ -19,6 +19,23 @@ class Linker(object):
 
         # TODO implement interactive mode to approve individual links
         if self.interactive: raise NotImplementedError
+
+    def move_to_target(self, common=False):
+        if common:
+            move_path = path.join(self.target, 'common')
+        else:
+            move_path  = path.join(self.target, gethostname())
+        # TODO this doesn't work across file-systems; copy+remove instead?
+        move_path = path.join(move_path, self.generate_target(self.destination))
+        try:
+            if self.verbose:
+                print "moving %s to %s" % (self.destination, move_path)
+            if not self.dry_run:
+                rename(self.destination, move_path)
+        except Exception as e:
+            raise LinkerError("Exception (type %s):\n%s" % (type(e), e))
+
+        self.make_links([move_path])
 
     def fetch_targets(self, dirname):
         try:
@@ -42,6 +59,11 @@ class Linker(object):
         if not target.startswith('_'):
             target = path.join(self.destination, target)
         return target.replace('_', '/').replace('//', '_')
+
+    def generate_target(self, link):
+        if link.startswith(self.target):
+            link.replace(self.target, '')
+        return link.replace('_', '__').replace('/', '_')
 
     def mkdir_p(self, path):
         try:
@@ -68,11 +90,7 @@ class Linker(object):
                     self.mkdir_p(directory)
 
             try:
-                if self.verbose:
-                    print "linking %s to %s" % (target, link)
-
-                # TODO only ignore identical links?
-                if path.exists(link) and not path.islink(link):
+                if path.exists(link) and path.realpath(link) != target:
                     if self.verbose:
                         print "%s already exists... " % link,
                     if self.delete_existing:
@@ -85,8 +103,13 @@ class Linker(object):
                             print "moving to %s.back" % link
                         if not self.dry_run:
                             rename(link, link + '.back')
-                if not self.dry_run:
-                    symlink(target, link)
+
+                if not path.exists(link):
+                    if self.verbose:
+                        print "linking %s to %s" % (target, link)
+
+                    if not self.dry_run:
+                        symlink(target, link)
             except OSError:
                 errors.append("linking %s failed" % link)
 
@@ -113,6 +136,18 @@ if __name__ == '__main__':
                       action='store_true',
                       help=("delete existing files instead of moving them to "
                             "original_name.back"))
+    parser.add_option('--move-first', '-m',
+                      dest='move_first', action='store_true',
+                      help=("move a file from its original location to the "
+                            "repo first, then link it back to its original "
+                            "location"))
+    parser.add_option('--common-target', '-c', dest='common_target',
+                      action='store_true', help=("only used with "
+                                                 "--move-to-target-first, "
+                                                 "this will move the original "
+                                                 "file to common, instead of "
+                                                 "hostname before linking back "
+                                                 "to its original location"))
     (opts, args) = parser.parse_args()
     if len(args) < 2:
         raise LinkerError("target and destination are required!")
@@ -128,4 +163,7 @@ if __name__ == '__main__':
                     exclude_common=opts.exclude_common,
                     delete_existing=opts.delete_existing, dry_run=opts.dry_run,
                     verbose=opts.verbose, interactive=opts.interactive)
-    linker.make_links()
+    if opts.move_first:
+        linker.move_to_target(common=opts.common_target)
+    else:
+        linker.make_links()

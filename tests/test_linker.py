@@ -29,6 +29,8 @@ class FunctionalTests(BaseCase):
         super(FunctionalTests, self).setUp()
         self.linker = Linker(self.indir, self.outdir)
 
+    # TODO add tests for moving the file then linking it back to its original location
+
     def test_fetch_targets(self):
         want_output = [path.join(self.indir, 'common', f) for f in \
                        ['commonfile1', '.commonfile3', '_tmp_commonfile4',

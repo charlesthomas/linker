@@ -24,12 +24,32 @@ class BaseCase(TestCase):
     def tearDown(self):
         rmtree(self.outdir)
 
+    def touch(self, dirname, basename):
+        open(path.join(dirname, basename), 'a').close()
+
 class FunctionalTests(BaseCase):
     def setUp(self):
         super(FunctionalTests, self).setUp()
         self.linker = Linker(self.indir, self.outdir)
 
-    # TODO add tests for moving the file then linking it back to its original location
+    # TODO add test common (instead of hostname)
+    # TODO add test for the link.startswith stuff in Linker.generate_target
+    def test_move_first(self):
+        test_file = '/tmp/test_file'
+        self.touch(self.outdir, test_file)
+        self.linker = Linker(self.indir, test_file)
+        test_link = path.join(self.indir, gethostname(),
+                              self.linker.generate_target(test_file))
+        try:
+            self.linker.move_to_target()
+            self.assertTrue(path.exists(test_file))
+            self.assertTrue(path.islink(test_file))
+            self.assertTrue(path.exists(test_link))
+            self.assertFalse(path.islink(test_link))
+            self.assertEqual(path.realpath(test_file), test_link)
+
+        finally:
+            remove(test_file)
 
     def test_fetch_targets(self):
         want_output = [path.join(self.indir, 'common', f) for f in \
@@ -95,7 +115,7 @@ class FullTests(BaseCase):
     def test_move_existing(self):
         want = ['commonfile1', '.commonfile3', 'common_file5', 'hostnamefile1',
                 'common_file5.back']
-        open(path.join(self.outdir, 'common_file5'), 'a').close()
+        self.touch(self.outdir, 'common_file5')
         linker = Linker(self.indir, self.outdir)
         linker.make_links()
         have = listdir(self.outdir)
@@ -105,7 +125,7 @@ class FullTests(BaseCase):
 
     def test_delete_existing(self):
         want = ['commonfile1', '.commonfile3', 'common_file5', 'hostnamefile1']
-        open(path.join(self.outdir, 'common_file5'), 'a').close()
+        self.touch(self.outdir, 'common_file5')
         self.assertTrue(not path.islink(path.join(self.outdir, 'common_file5')))
         linker = Linker(self.indir, self.outdir, delete_existing=True)
         linker.make_links()

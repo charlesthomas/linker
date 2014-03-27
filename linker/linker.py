@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from errno import EEXIST, ENOENT
-from os import listdir, makedirs, path, remove, rename, symlink
+from os import listdir, makedirs, path, remove, symlink
+from shutil import move
 from socket import gethostname
 
 class LinkerError(Exception): pass
@@ -25,13 +26,12 @@ class Linker(object):
             move_path = path.join(self.target, 'common')
         else:
             move_path  = path.join(self.target, gethostname())
-        # TODO this doesn't work across file-systems; copy+remove instead?
         move_path = path.join(move_path, self.generate_target(self.destination))
         try:
             if self.verbose:
                 print "moving %s to %s" % (self.destination, move_path)
             if not self.dry_run:
-                rename(self.destination, move_path)
+                move(self.destination, move_path)
         except Exception as e:
             raise LinkerError("Exception (type %s):\n%s" % (type(e), e))
 
@@ -102,7 +102,7 @@ class Linker(object):
                         if self.verbose:
                             print "moving to %s.back" % link
                         if not self.dry_run:
-                            rename(link, link + '.back')
+                            move(link, link + '.back')
 
                 if not path.exists(link):
                     if self.verbose:

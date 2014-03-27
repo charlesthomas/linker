@@ -1,8 +1,6 @@
 ## To Do
 ### ``linker/linker.py``
-(line 20) implement interactive mode to approve individual links
-
-(line 28) this doesn't work across file-systems; copy+remove instead?
+(line 21) implement interactive mode to approve individual links
 
 
 ### ``setup.py``
@@ -10,6 +8,8 @@
 
 
 ### ``tests/test_linker.py``
-(line 32) add tests for moving the file then linking it back to its original location
+(line 35) add test common (instead of hostname)
+
+(line 36) add test for the link.startswith stuff in Linker.generate_target
 
 ######Generated using [todo.md](https://github.com/charlesthomas/todo.md)

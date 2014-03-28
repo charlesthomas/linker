@@ -22,7 +22,7 @@ Usage
 
 ::
 
-    Usage: linker.py [options] target destination
+    Usage: linker [options] target destination
 
     Options:
       -h, --help            show this help message and exit
@@ -33,6 +33,11 @@ Usage
                             dirs. this will only link `hostname`
       --delete-existing     delete existing files instead of moving them to
                             original_name.back
+      -m, --move-first      move a file from its original location to the repo
+                            first, then link it back to its original location
+      -c, --common-target   only used with --move-to-target-first, this will move
+                            the original file to common, instead of hostname
+                            before linking back to its original location
 
 Deterministic File Names
 ------------------------
@@ -64,10 +69,12 @@ Deterministic File Names
 - If a file already exists, it should be backed up (moved to
   original_name.back), unless you explicity include ``--delete-existing``.
 
-Example
--------
+Vanilla Example
+---------------
 The user "user" keeps their dot files in a repo called "dotfiles" and
 they want to use ``linker`` on a machine called "hostname".
+
+::
 
     - /home/user/git/dotfiles
         - hostname
@@ -78,6 +85,10 @@ they want to use ``linker`` on a machine called "hostname".
         - common
             - .bashrc
 
+With the command::
+
+    linker /home/user/git/dotfiles /home/user
+
 ``linker`` would make the following symlinks:
 
     - /home/user/.bashrc -> /home/user/git/dotfiles/common/.bashrc
@@ -87,9 +98,39 @@ they want to use ``linker`` on a machine called "hostname".
 
 Notice crontab_backup.dontlink wasn't linked anywhere.
 
+Move First Example
+------------------
+If you already have your files named appropriately, using ``linker`` is easy. If
+you don't, the naming scheme can be confusing. Using ``linker -m [-c]`` will
+*hopefully* make this easier.
+
+"User" has a repo "dotfiles" on a machine called "hostname" and wants to add
+``/etc/hosts`` to the dotfiles repo::
+
+    linker -m /home/user/git/dotfiles /etc/hosts
+
+``linker`` will **move** ``/etc/hosts`` to
+``/home/user/git/dotfiles/hostname/_etc_hosts`` and then link that file back to
+``/etc/hosts``::
+
+    - /etc/hosts -> /home/user/git/dotfiles/hostname/_etc_hosts
+
+Doing the same, but adding the ``-c`` option::
+
+    linker -m -c /home/user/git/dotfiles /etc/hosts
+
+``linker`` will move ``/etc/hosts`` to
+``/home/user/git/dotfiles/common/_etc_hosts`` instead of
+``../hostname/_etc_hosts``::
+
+    - /etc/hosts -> /home/user/git/dotfiles/common/_etc_hosts
+
+This option was intended to be used **one file at a time**, and ``destination``
+must be the full file path.
+
 To Do
 -----
 See `todo.md`_
 
-.. _Example: https://github.com/charlesthomas/linker#example
+.. _Example: https://github.com/charlesthomas/linker#vanilla-example
 .. _todo.md: https://github.com/charlesthomas/linker/blob/master/todo.md

@@ -22,7 +22,7 @@ Usage
 
 ::
 
-    Usage: linker [options] target destination
+    Usage: linker.py [options] target destination
 
     Options:
       -h, --help            show this help message and exit

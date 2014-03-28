@@ -32,8 +32,6 @@ class FunctionalTests(BaseCase):
         super(FunctionalTests, self).setUp()
         self.linker = Linker(self.indir, self.outdir)
 
-    # TODO add test common (instead of hostname)
-    # TODO add test for the link.startswith stuff in Linker.generate_target
     def test_move_first(self):
         test_file = '/tmp/test_file'
         self.touch(self.outdir, test_file)
@@ -47,9 +45,25 @@ class FunctionalTests(BaseCase):
             self.assertTrue(path.exists(test_link))
             self.assertFalse(path.islink(test_link))
             self.assertEqual(path.realpath(test_file), test_link)
-
         finally:
             remove(test_file)
+
+    def test_move_first_common(self):
+        test_file = '/tmp/test_file'
+        self.touch(self.outdir, test_file)
+        self.linker = Linker(self.indir, test_file)
+        test_link = path.join(self.indir, 'common',
+                              self.linker.generate_target(test_file))
+        try:
+            self.linker.move_to_target(common=True)
+            self.assertTrue(path.exists(test_file))
+            self.assertTrue(path.islink(test_file))
+            self.assertTrue(path.exists(test_link))
+            self.assertFalse(path.islink(test_link))
+            self.assertEqual(path.realpath(test_file), test_link)
+        finally:
+            remove(test_file)
+            remove(test_link)
 
     def test_fetch_targets(self):
         want_output = [path.join(self.indir, 'common', f) for f in \

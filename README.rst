@@ -89,7 +89,7 @@ With the command::
 
     linker /home/user/git/dotfiles /home/user
 
-``linker`` would make the following symlinks:
+``linker`` would make the following symlinks::
 
     - /home/user/.bashrc -> /home/user/git/dotfiles/common/.bashrc
     - /home/user/.vimrc -> /home/user/git/dotfiles/hostname/.vimrc

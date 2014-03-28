@@ -142,8 +142,7 @@ if __name__ == '__main__':
                             "repo first, then link it back to its original "
                             "location"))
     parser.add_option('--common-target', '-c', dest='common_target',
-                      action='store_true', help=("only used with "
-                                                 "--move-to-target-first, "
+                      action='store_true', help=("only used with --move-first, "
                                                  "this will move the original "
                                                  "file to common, instead of "
                                                  "hostname before linking back "

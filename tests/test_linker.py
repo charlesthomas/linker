@@ -24,8 +24,11 @@ class BaseCase(TestCase):
     def tearDown(self):
         rmtree(self.outdir)
 
-    def touch(self, dirname, basename):
-        open(path.join(dirname, basename), 'a').close()
+    def touch(self, dirname, basename=None):
+        if basename is None:
+            open(path.join(dirname), 'a').close()
+        else:
+            open(path.join(dirname, basename), 'a').close()
 
 class FunctionalTests(BaseCase):
     def setUp(self):
@@ -148,6 +151,33 @@ class FullTests(BaseCase):
         have.sort()
         self.assertEqual(want, have)
         self.assertTrue(path.islink(path.join(self.outdir, 'common_file5')))
+
+    def test_common_and_host_file_collision(self):
+        '''
+        What happens if a file with the same name exists in the common dir and
+        in the "hostname" dir?
+        Desired behavior is that common is linked first and hostname overwrites
+        it, so that common can have a config that applies to all machines, but
+        it gets overwritten on a machine by machine basis.
+        '''
+        real_bothfile = path.join(self.indir, gethostname(), 'bothfile')
+        real_bothfile_back = path.join(self.indir, 'common', 'bothfile')
+        self.touch(real_bothfile)
+        self.touch(real_bothfile_back)
+        linker = Linker(self.indir, self.outdir)
+        linker.make_links()
+        bothfile=path.join(self.outdir, 'bothfile')
+        bothfile_back=path.join(self.outdir, 'bothfile.back')
+        try:
+            self.assertTrue(path.exists(bothfile))
+            self.assertTrue(path.exists(bothfile_back))
+            self.assertTrue(path.islink(bothfile))
+            self.assertTrue(path.islink(bothfile_back))
+            self.assertEqual(real_bothfile, path.realpath(bothfile))
+            self.assertEqual(real_bothfile_back, path.realpath(bothfile_back))
+        finally:
+            remove(real_bothfile)
+            remove(real_bothfile_back)
 
 if __name__ == '__main__':
     main()

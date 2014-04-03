@@ -19,6 +19,14 @@ setup(
     long_description=LONG_DESC,
     test_suite='tests',
     scripts=['linker/linker.py'],
-    classifiers=[]
-    # TODO add classifiers
+    classifiers=['Development Status :: 5 - Production/Stable',
+                 'Intended Audience :: End Users/Desktop',
+                 'Intended Audience :: System Administrators',
+                 'License :: OSI Approved :: MIT License',
+                 'Operating System :: MacOS :: MacOS X',
+                 'Operating System :: POSIX :: Linux',
+                 'Programming Language :: Python :: 2.7',
+                 'Topic :: Desktop Environment',
+                 'Topic :: System :: Installation/Setup',
+                 'Topic :: Utilities']
 )

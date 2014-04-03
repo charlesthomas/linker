@@ -1,7 +1,7 @@
 ======
 linker
 ======
-.. image:: https://travis-ci.org/charlesthomas/linker.svg?branch=master
+.. image:: https://travis-ci.org/charlesthomas/linker.svg?branch=python3
         :target: https://travis-ci.org/charlesthomas/linker
 
 ``linker`` is a tool for symlinking files based on the name of original file.

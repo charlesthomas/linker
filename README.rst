@@ -6,6 +6,10 @@ linker
 
 ``linker`` is a tool for symlinking files based on the name of original file.
 
+Python Support
+--------------
+``linker`` is supported under python 2.6, 2.7, 3.3, and 3.4
+
 Why use ``linker``?
 -------------------
 ``linker`` takes a target directory and a destination directory as arguments,

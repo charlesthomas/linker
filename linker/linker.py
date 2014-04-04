@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 from errno import EEXIST, ENOENT
 from os import listdir, makedirs, path, remove, symlink
 from shutil import move
@@ -29,7 +30,7 @@ class Linker(object):
         move_path = path.join(move_path, self.generate_target(self.destination))
         try:
             if self.verbose:
-                print "moving %s to %s" % (self.destination, move_path)
+                print("moving %s to %s" % (self.destination, move_path))
             if not self.dry_run:
                 move(self.destination, move_path)
         except Exception as e:
@@ -84,29 +85,29 @@ class Linker(object):
             directory = path.dirname(link)
             if not path.exists(directory):
                 if self.verbose:
-                    print "directory %s doesn't exist... creating it" % \
-                    directory
+                    print("directory %s doesn't exist... creating it" % \
+                    directory)
                 if not self.dry_run:
                     self.mkdir_p(directory)
 
             try:
                 if path.exists(link) and path.realpath(link) != target:
                     if self.verbose:
-                        print "%s already exists... " % link,
+                        print("%s already exists... " % link, end=' ')
                     if self.delete_existing:
                         if self.verbose:
-                            print "deleting"
+                            print("deleting")
                         if not self.dry_run:
                             remove(link)
                     else:
                         if self.verbose:
-                            print "moving to %s.back" % link
+                            print("moving to %s.back" % link)
                         if not self.dry_run:
                             move(link, link + '.back')
 
                 if not path.exists(link):
                     if self.verbose:
-                        print "linking %s to %s" % (target, link)
+                        print("linking %s to %s" % (target, link))
 
                     if not self.dry_run:
                         symlink(target, link)
@@ -153,10 +154,10 @@ if __name__ == '__main__':
 
     if opts.dry_run:
         opts.verbose = True
-        print """
+        print("""
     THIS IS A DRY RUN
     NOTHING WILL ACTUALLY BE CREATED / DESTROYED / MOVED
-    """
+    """)
 
     linker = Linker(target=args[0], destination=args[1],
                     exclude_common=opts.exclude_common,

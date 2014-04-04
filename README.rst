@@ -8,7 +8,7 @@ linker
 
 Python Support
 --------------
-``linker`` is supported under python 2.6, 2.7, 3.3, and 3.4
+``linker`` is supported under python 2.7, 3.3, and 3.4
 
 Why use ``linker``?
 -------------------

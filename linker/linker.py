@@ -10,8 +10,8 @@ class Linker(object):
     def __init__(self, target, destination, exclude_common=False,
                  delete_existing=False, dry_run=False,
                  verbose=False, interactive=False):
-        self.target = target
-        self.destination = destination
+        self.target = path.abspath(path.expanduser(target))
+        self.destination = path.abspath(path.expanduser(destination))
         self.exclude_common = exclude_common
         self.delete_existing = delete_existing
         self.dry_run = dry_run

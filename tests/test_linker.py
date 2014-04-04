@@ -179,5 +179,16 @@ class FullTests(BaseCase):
             remove(real_bothfile)
             remove(real_bothfile_back)
 
+    def test_relative_paths(self):
+        linker = Linker(target='./tests/input', destination='./tests/output')
+        want = ['commonfile1', '.commonfile3', 'common_file5', 'hostnamefile1',
+                '/tmp/commonfile4']
+        linker.make_links()
+        have = listdir(path.abspath(path.expanduser('./tests/output')))
+        if path.exists(want[-1]): have.append(want[-1])
+        want.sort()
+        have.sort()
+        self.assertEqual(want, have)
+
 if __name__ == '__main__':
     main()

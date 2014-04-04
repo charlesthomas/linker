@@ -9,7 +9,8 @@ linker
 Python Support
 --------------
 ``linker`` is supported under python 2.7, 3.3, and 3.4
-Thanks to [lanshark](https://github.com/lanshark) for adding Python3 support!
+
+Thanks to `lanshark'_ for adding Python3 support!
 
 Why use ``linker``?
 -------------------
@@ -137,5 +138,6 @@ To Do
 -----
 See `todo.md`_
 
+.. _`lanshark`: https://github.com/lanshark
 .. _Example: https://github.com/charlesthomas/linker#vanilla-example
 .. _todo.md: https://github.com/charlesthomas/linker/blob/master/todo.md

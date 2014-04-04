@@ -101,7 +101,7 @@ class Linker(object):
                             remove(link)
                     else:
                         if self.verbose:
-                            print "moving to %s.back" % link
+                            print("moving to %s.back" % link)
                         if not self.dry_run:
                             move(link, link + '.back')
 

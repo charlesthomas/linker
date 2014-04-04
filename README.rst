@@ -10,7 +10,7 @@ Python Support
 --------------
 ``linker`` is supported under python 2.7, 3.3, and 3.4
 
-Thanks to `lanshark'_ for adding Python3 support!
+Thanks to `lanshark`_ for adding Python3 support!
 
 Why use ``linker``?
 -------------------
